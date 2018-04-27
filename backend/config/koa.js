@@ -2,20 +2,25 @@ const Koa = require('koa');
 const onerror = require('koa-onerror');
 const bodyparser = require('koa-bodyparser');
 
+const session = require('./session');
 const logger = require('../utils/logger')(__filename);
 
 module.exports = (config) => {
   const app = new Koa();
 
-  onerror(app);
-  app.use(bodyparser());
+  app.keys = config.cookie.keys;
 
-  app.use(async (ctx, next) => {
-    const start = new Date();
-    await next();
-    const ms = new Date() - start;
-    logger.trace(`${ctx.method} ${ctx.url} - ${ms}ms`);
-  });
+  onerror(app);
+
+  app
+    .use(bodyparser())
+    .use(async (ctx, next) => {
+      const start = new Date();
+      await next();
+      const ms = new Date() - start;
+      logger.trace(`${ctx.method} ${ctx.url} - ${ms}ms`);
+    })
+    .use(session(config, app));
 
   app.promise = new Promise((resolve, reject) => {
     app.listen(config.port, (err) => {
