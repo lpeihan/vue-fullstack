@@ -38,7 +38,7 @@ module.exports = (config) => {
     })
     .use(session(config, app))
     .use(passport.middleware())
-    .use(require('koa-static')(path.resolve(__dirname, '/static')));
+    .use(require('koa-static')(path.join(__dirname, '..', '/static')));
 
   app.promise = new Promise((resolve, reject) => {
     app.listen(config.port, (err) => {

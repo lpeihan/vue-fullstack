@@ -2,8 +2,15 @@
 
 const crypto = require('crypto');
 const Promise = require('bluebird');
+const _ = require('lodash');
 
 const pbkdf2 = Promise.promisify(crypto.pbkdf2);
+
+const key = {
+  userId(id) {
+    return `user:${id}`;
+  }
+};
 
 module.exports = (Schema, redis) => {
   /**
@@ -16,6 +23,21 @@ module.exports = (Schema, redis) => {
     create_date: { type: Number, default: Date.now },
     update_date: Number
   });
+
+  /**
+   * Virtuals
+   */
+
+  UserSchema
+    .virtual('_info')
+    .get(function() {
+      const result = _.pick(this, [
+        'account',
+        'create_date',
+        'update_date'
+      ]);
+      return result;
+    });
 
   /**
    * Hooks
@@ -54,6 +76,17 @@ module.exports = (Schema, redis) => {
         .toString('base64');
 
       return hashPassword;
+    }
+  };
+
+  /**
+   * Statics
+   */
+  UserSchema.statics = {
+    async setUserId(id) {
+      const k = key.userId(id);
+      const result = await redis.set(k, id);
+      return result;
     }
   };
 
