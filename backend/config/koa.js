@@ -3,6 +3,7 @@ const onerror = require('koa-onerror');
 const bodyparser = require('koa-bodyparser');
 
 const session = require('./session');
+const passport = require('./passport');
 const logger = require('../utils/logger')(__filename);
 
 module.exports = (config) => {
@@ -13,14 +14,29 @@ module.exports = (config) => {
   onerror(app);
 
   app
-    .use(bodyparser())
     .use(async (ctx, next) => {
       const start = new Date();
       await next();
       const ms = new Date() - start;
       logger.trace(`${ctx.method} ${ctx.url} - ${ms}ms`);
     })
-    .use(session(config, app));
+    .use(bodyparser())
+    .use(async function(ctx, next) {
+      await next();
+
+      const userCookie = ctx.user
+        ? encodeURIComponent(JSON.stringify(ctx.user))
+        : undefined;
+
+      ctx.cookies.set(`${config.app.name}.user`, userCookie, {
+        httpOnly: false,
+        maxAge: config.cookie.maxAge,
+        signed: false, // 是否加密
+        overwrite: true
+      });
+    })
+    .use(session(config, app))
+    .use(passport.middleware());
 
   app.promise = new Promise((resolve, reject) => {
     app.listen(config.port, (err) => {

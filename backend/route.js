@@ -2,8 +2,16 @@
 
 const Router = require('koa-router');
 const Record = require('./controllers/record');
+const User = require('./controllers/user');
+const Init = require('./init');
 
 const apiV1Routes = {
+  '/init': {
+    get: Init
+  },
+  '/login': {
+    post: User.login
+  },
   '/records': {
     get: Record.getRecords,
     post: Record.createRecord
