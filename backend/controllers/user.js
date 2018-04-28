@@ -11,5 +11,14 @@ module.exports = {
     } catch (e) {
       handleError(e.message, e, ctx, 400);
     }
+  },
+  async logout(ctx) {
+    try {
+      await passport.logout(ctx);
+
+      ctx.body = null;
+    } catch (e) {
+      handleError(e.message, e, ctx, 400);
+    }
   }
 };

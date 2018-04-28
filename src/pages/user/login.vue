@@ -14,7 +14,8 @@
     </div>
     <div class="form-group">
       <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-default">登录</button>
+        <button type="submit" class="btn btn-primary">登录</button>
+        <button type="button" class="btn btn-default" @click="logout">退出</button>
       </div>
     </div>
   </form>
@@ -33,6 +34,9 @@ export default {
   methods: {
     async login() {
       this.$http.post('login', this.user);
+    },
+    async logout() {
+      this.$http.delete('logout');
     }
   }
 };

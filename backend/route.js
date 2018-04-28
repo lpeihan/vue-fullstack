@@ -12,6 +12,9 @@ const apiV1Routes = {
   '/login': {
     post: User.login
   },
+  '/logout': {
+    delete: User.logout
+  },
   '/records': {
     get: Record.getRecords,
     post: Record.createRecord
