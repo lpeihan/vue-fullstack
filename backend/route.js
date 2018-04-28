@@ -4,6 +4,7 @@ const Router = require('koa-router');
 const Record = require('./controllers/record');
 const User = require('./controllers/user');
 const Init = require('./init');
+const Ctrl = require('./controllers');
 
 const apiV1Routes = {
   '/init': {
@@ -36,7 +37,8 @@ module.exports = (app) => {
   }
 
   base
-    .use('/api/v1', apiV1.routes(), apiV1.allowedMethods());
+    .use('/api/v1', apiV1.routes(), apiV1.allowedMethods())
+    .all('/', Ctrl.html);
 
   app
     .use(base.routes())

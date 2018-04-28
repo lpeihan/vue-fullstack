@@ -13,9 +13,9 @@ function getUserModel() {
 passport.serializeUser(user => Promise.resolve(user ? user.id : undefined));
 passport.deserializeUser(async (session) => {
   const user = await getUserModel().findOne({
-    id: session
+    _id: session
   });
-  return user;
+  return session && user;
 });
 
 passport.use('local', async function (params) {

@@ -1,6 +1,7 @@
 const Koa = require('koa');
 const onerror = require('koa-onerror');
 const bodyparser = require('koa-bodyparser');
+const path = require('path');
 
 const session = require('./session');
 const passport = require('./passport');
@@ -36,7 +37,8 @@ module.exports = (config) => {
       });
     })
     .use(session(config, app))
-    .use(passport.middleware());
+    .use(passport.middleware())
+    .use(require('koa-static')(path.resolve(__dirname, '/static')));
 
   app.promise = new Promise((resolve, reject) => {
     app.listen(config.port, (err) => {
